@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ms">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>OpenAI on Vercel – Demo</title>
+  </head>
+  <body>
+    <h1>OpenAI Demo</h1>
+    <textarea id="prompt" placeholder="Tulis prompt kat sini"></textarea>
+    <br/>
+    <button id="go">Hantar</button>
+    <h3>Jawapan:</h3>
+    <pre id="out">— belum ada output —</pre>
+
+    <script>
+      const $ = (s) => document.querySelector(s);
+      $('#go').addEventListener('click', async () => {
+        const userText = $('#prompt').value.trim();
+        if (!userText) return;
+        $('#out').textContent = 'Loading...';
+
+        const res = await fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            temperature: 0.7,
+            messages: [
+              { role: 'system', content: 'You are a helpful assistant.' },
+              { role: 'user', content: userText }
+            ]
+          })
+        });
+
+        const data = await res.json();
+        const answer = data.choices?.[0]?.message?.content ?? 'Error';
+        $('#out').textContent = answer;
+      });
+    </script>
+  </body>
+</html>
