@@ -130,9 +130,22 @@
       addMessage(text, "user");
       inputEl.value = "";
 
+      const res =  fetch('/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'gpt-4o-mini',
+            temperature: 0.7,
+            messages: [
+              { role: 'system', content: 'You are a helpful assistant.' },
+              { role: 'user', content: text }
+            ]
+        })
+    });
+
       // Simulate AI reply
       setTimeout(() => {
-        addMessage("You said: " + text, "bot");
+        addMessage("Bot: " + text, "bot");
       }, 600);
     }
   </script>
