@@ -115,7 +115,7 @@
   <script>
     const messagesEl = document.getElementById("messages");
     const inputEl = document.getElementById("inputMsg");
-
+  
     function addMessage(text, sender) {
       const div = document.createElement("div");
       div.classList.add("message", sender);
@@ -123,31 +123,41 @@
       messagesEl.appendChild(div);
       messagesEl.scrollTop = messagesEl.scrollHeight; // auto scroll
     }
-
-    function sendMessage() {
+  
+    async function sendMessage() {
       const text = inputEl.value.trim();
       if (!text) return;
+  
+      // User bubble
       addMessage(text, "user");
       inputEl.value = "";
-
-      const res =  fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+  
+      try {
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            model: 'gpt-4o-mini',
+            model: "gpt-4o-mini",
             temperature: 0.7,
             messages: [
-              { role: 'system', content: 'You are a helpful assistant.' },
-              { role: 'user', content: text }
+              { role: "system", content: "You are a helpful assistant." },
+              { role: "user", content: text }
             ]
-        })
-    });
-
-      // Simulate AI reply
-      setTimeout(() => {
-        addMessage("Bot: " + text, "bot");
-      }, 600);
+          })
+        });
+  
+        const data = await res.json();
+        const answer = data.choices?.[0]?.message?.content ?? "Error";
+  
+        // Bot bubble
+        addMessage(answer, "bot");
+  
+      } catch (err) {
+        console.error(err);
+        addMessage("⚠️ Error contacting AI", "bot");
+      }
     }
   </script>
+  
 </body>
 </html>
