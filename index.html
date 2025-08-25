@@ -109,12 +109,14 @@
     <div class="input-container">
       <input id="inputMsg" type="text" placeholder="Type your message...">
       <button onclick="sendMessage()">Send</button>
+      <button id="clearBtn">Clear Chat</button>
     </div>
   </div>
 
   <script>
     const messagesEl = document.getElementById("messages");
     const inputEl = document.getElementById("inputMsg");
+    const clearBtn = document.getElementById("clearBtn");
   
     // Load conversation from localStorage or start fresh
     let conversation = JSON.parse(localStorage.getItem("conversation")) || [
@@ -133,6 +135,13 @@
         sendMessage();
       }
     });
+
+    clearBtn.addEventListener("click", function() {
+    conversation = [{ role: "system", content: "Nama kau adalah 'Anomali X'" }];
+    localStorage.setItem("conversation", JSON.stringify(conversation));
+    messagesEl.innerHTML = "";
+    addMessage("Chat cleared! Say hi again.", "bot");
+  });
   
     function addMessage(text, sender) {
       const div = document.createElement("div");
